@@ -5,18 +5,18 @@ from setuptools import setup, find_namespace_packages
 # information to be updated by contributors
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # model_name: name of the overarching model for the component(s)
-model_name = 'template'
+model_name = 'alpine1'
 
 # authors: list of the contributors' names
 # (firstname followed by lastname, comma-separated list)
-authors = 'Jane Doe, John Doe'
+authors = 'Wouter Knoben'
 
 # licence: open source licence under which package is distributed
 # (see https://choosealicense.com/)
 licence = 'GPL-3'
 
 # source_url: remote location of the git repository hosting the source code
-source_url = 'https://github.com/unifhy-org/unifhycontrib-template'
+source_url = 'https://github.com/wknoben/unifhycontrib-alpine1'
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 with open("README.rst", 'r') as fh:
