@@ -3,7 +3,7 @@ import unifhy
 
 class SurfaceLayerComponent(unifhy.component.SurfaceLayerComponent):
     """The Alpine1 model
-    (`Eder et al., 2003 <https://doi.org/10.1002/hyp.1325>`_)
+    (`Eder et al., 2003`_)
     is a bucket-type rainfall-runoff model.
 
     Alpine1 is a simply conceptual rainfall-runoff model originally
