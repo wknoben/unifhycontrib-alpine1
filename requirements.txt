@@ -1,1 +1,2 @@
+numpy
 unifhy>=0.1.0
