@@ -1,72 +1,24 @@
-A template to create unifhy-compliant components
-================================================
+A unifhy-compliant version of the rainfall-runoff model Alpine 1
+========================================================================
 
-This repository features the package structure and contains the files
-one needs to create component(s) that can be used with the Community
-Model for the Terrestrial Water Cycle (`unifhy`) Python package.
+The Alpine1 model (`Eder et al., 2003`_) is a bucket-type rainfall-runoff model.
 
-How to use the template?
-------------------------
+Alpine1 is a simply conceptual rainfall-runoff model originally
+developed for use in the Austrian Alps (`Eder et al., 2003`_).
+It contains a simple degree-day-based snow accumulation and melt
+model, coupled to a basic representation of the soil column. The
+soil column is modelled as a simple bucket with evaporation, 
+surface runoff and baseflow processes. The version used here is 
+derived from the MARRMoT database (`Knoben et al., 2019`_).
 
-1. Choose a model name for your component(s) (to replace <model_name> in the
-   steps below), following `PEP 8 naming convention
-   <https://www.python.org/dev/peps/pep-0008/#package-and-module-names>`_
-   i.e. all-lowercase names with underscores if this improves readability only.
-
-2. Create a new local directory using your model name and adding the prefix
-   *unifhycontrib-* to it:
-
-.. code-block:: bash
-
-   mkdir unifhycontrib-<model_name>
+.. _`Eder et al., 2003`: https://doi.org/10.1002/hyp.1325
+.. _`Knoben et al., 2019`: https://doi.org/10.5194/gmd-12-2463-2019
+    
+:contributors: Wouter Knoben [1]
+:affiliations:
+    1. Schulich School of Engineering, University of Calgary, Canada
+:licence: GPL-3.0
+:copyright: 2024
+:codebase: https://github.com/wknoben/unifhycontrib-alpine1
 
 
-3. Initialise a local git repository in it:
-
-.. code-block:: bash
-
-   cd unifhycontrib-<model_name>
-   git init
-
-4. Download the template source available at
-   https://github.com/unifhy-org/unifhycontrib-template (click 'Code' then
-   click 'Download ZIP') and place the unzipped source in the newly created
-   directory.
-
-5. Rename the existing Python package using your model name:
-
-.. code-block:: bash
-
-   mv unifhycontrib/template unifhycontrib/<model_name>
-
-6. Add and commit those files to the repository:
-
-.. code-block:: bash
-
-   git commit -am "commit template"
-
-7. Create a remote git repository on GitHub and name it
-   *unifhycontrib-<model_name>*. Note, using GitHub is not mandatory,
-   simply adjust the steps below accordingly if using another host.
-
-8. Set it as a remote repository for your local repository (replace <github_id>
-   with your actual GitHub username):
-
-.. code-block:: bash
-
-   git remote add origin https://github.com/<github_id>/unifhycontrib-<model_name>.git
-
-9. Push your commit to the remote repository:
-
-.. code-block:: bash
-
-   git push -u origin main
-
-10. Develop your own component contribution(s) following the `Guide for Contributors
-    <https://unifhy-org.github.io/unifhy/for_contributors/preparation.html>`_.
-
-11. List your package dependencies in `<requirements.txt>`_.
-
-12. Overwrite the content in `<README.rst>`_ to describe your component(s).
-
-13. Update the first part of `setup.py <setup.py#L4-L20>`_ with your own details.
