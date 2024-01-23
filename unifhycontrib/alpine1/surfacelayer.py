@@ -15,7 +15,7 @@ class SurfaceLayerComponent(unifhy.component.SurfaceLayerComponent):
     derived from the MARRMoT database (`Knoben et al., 2019`_).
 
     .. _`Eder et al., 2003`: https://doi.org/10.1002/hyp.1325
-    .. -`Knoben et al., 2019`: https://doi.org/10.5194/gmd-12-2463-2019
+    .. _`Knoben et al., 2019`: https://doi.org/10.5194/gmd-12-2463-2019
     
     :contributors: Wouter Knoben [1]
     :affiliations:
@@ -78,13 +78,13 @@ class SurfaceLayerComponent(unifhy.component.SurfaceLayerComponent):
             self,
             # nothing from exchanger
             # component inputs
-            precipitation_flux, air_temperature,
+            precipitation_flux, air_temperature, # [kg m-2 s-1], [K]
             # component parameters
-            theta_tt, theta_ddf,
+            theta_tt, theta_ddf, # [C], [mm C-1 d-1]
             # component states
-            snow_store,
+            snow_store, # [mm]
             # component constants
-            rho_water,
+            rho_water, # [kg m-3]
             **kwargs):
 
         # This implements Equation 39 in the MARRMoT supplement: dSn/dt = Ps - Qn
@@ -109,31 +109,35 @@ class SurfaceLayerComponent(unifhy.component.SurfaceLayerComponent):
 
         # Divide precipitation into snow and rain (Eq. 40)
         Pr = np.where(T  > Tt, P, 0) # [mm d-1]
-        Ps = np.where(T =< Tt, P, 0) # [mm d-1]
+        Ps = np.where(T <= Tt, P, 0) # [mm d-1]
 
-        # Determine melt (Eq. 41)
+        # Determine melt rate (Eq. 41)
         Qn = np.where(T >= Tt, ddf*(T-Tt), 0) # [mm d-1] = [mm C-1 d-1] * ([C]-[C])
 
         # Compute the change in storage
         #  Note: MARRMoT takes this outside the model equations but here it needs to be inside the component
-        #  For simplicity, we'll use a straightforward Explicit Euler implementation to avoid the need to write a solver
+        #  For simplicity, we'll use a straightforward Explicit Euler implementation to avoid the need to use an iterative procedure
         #
-        #  dSn/dt = Ps - Qn > Sn[0] = Sn[-1] + (Ps - Qn) * delta_t 
+        #  dSn/dt = Ps - Qn  >>  Sn[t] = Sn[t-1] + (Ps[t] - Qn[t]) * delta_t 
         #
         #  In this model, snowfall and snowmelt are mutually exclusive, which makes the following a bit easier: at least
         #  1 (or both) of Ps and Qn are zero.
 
-        # 1. Ensure we don't melt more snow than we have in the store, while accoutning for time step size
-        actual_Qn = np.where(Qn * dt > snow_store[-1], snow_store[-1], Qn * dt) # [mm] = [mm d-1]*[d] > [mm], [mm], [mm d-1]*[d]
+        # 1. Get storage at t-1
+        snow_old = snow_store.get_timestep(-1) # [mm]
 
-        # 2. Account for time step size in Pr and Ps
+        # 2. Ensure we don't melt more snow than we have in the store, while accoutning for time step size
+        actual_Qn = np.where(Qn * dt > snow_old, snow_old, Qn * dt) # [mm] = [mm d-1]*[d] > [mm], [mm], [mm d-1]*[d]
+
+        # 3. Account for time step size in Pr and Ps
         actual_Pr = Pr * dt # [mm] = [mm d-1] * [d]
         actual_Ps = Ps * dt # [mm] = [mm d-1] * [d]
 
-        # 3. Update the snow store
-        snow_store[1] = snow_store[-1] + actual_Ps - actual_Qn # [mm] = [mm] + [mm] - [mm]
+        # 4. Update the snow store
+        snow_store = snow_old + actual_Ps - actual_Qn # [mm] = [mm] + [mm] - [mm]
+        snow_store = np.where(snow_store < 0, 0, snow_store) # We shouldn't need this (haha) but it's here to prevent round-off errors accidentally dropping us into the negatives
         
-        # 4. Map the internal variables onto the declared output variables
+        # 5. Map the internal variables onto the declared output variables
         #  We have the fluxes as depths over the time interval, so we need to convert them back into rates per second
         #  by using the length of the time interval in seconds:
         #  [kg m-2 s-1] = ([mm] + [mm]) / [mm m-1] * [kg m-3] / [s]
